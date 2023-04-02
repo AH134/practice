@@ -1,0 +1,5 @@
+- PascalCasing: capitalize first letter of every word of the file name
+- react cannot return multiple elements (eg. cannot return h1 and ul in one component)
+- {items.length === 0 && <p>No items found</p>}
+    - if true, returns no items found
+    - if false, returns false
