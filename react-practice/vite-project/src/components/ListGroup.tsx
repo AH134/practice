@@ -1,18 +1,18 @@
 import { MouseEvent, useState } from "react";
 
-function ListGroup() {
-  let items = ["japan", "tokyo", "kyoto", "fukuoka", "osaka"];
+interface ListGroupProps {
+    items: string[],
+    heading: string,
+}
+
+function ListGroup({ items, heading }: ListGroupProps) {
+
   // Hook
   let [selectedIndex, setSelectedIndex] = useState(-1);
 
-  // eventhandler
-  // const handleClick = (e: MouseEvent) => {console.log(e)};
-
   return (
-    // <> is same as react fragment
-    // {items.length === 0 ? <p>No items found</p> : null}
     <>
-      <h1>List</h1>
+      <h1>{heading}</h1>
       {items.length === 0 && <p>No items found</p>}
       <ul className="list-group">
         {items.map((item, index) => (
