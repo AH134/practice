@@ -3,3 +3,4 @@
 - {items.length === 0 && <p>No items found</p>}
     - if true, returns no items found
     - if false, returns false
+- ts interface "children: ReactNode" allows to pass html content
