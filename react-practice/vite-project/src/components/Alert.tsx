@@ -5,11 +5,17 @@ interface AlertProps {
   onClose: () => void;
 }
 
-const Alert = ({ children, onClose  }: AlertProps) => {
+const Alert = ({ children, onClose }: AlertProps) => {
   return (
     <div className="alert alert-primary alert-dismissable">
-        {children}
-        <button type="button" className="btn-close" onClick={onClose} data-bs-dismiss="alert" aria-label="Close"></button>
+      {children}
+      <button
+        type="button"
+        className="btn-close"
+        onClick={onClose}
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
     </div>
   );
 };
