@@ -1,21 +1,36 @@
 import "./App.css";
 
 function App() {
-  const bob = true;
-
-  // basically a if statement
-  const tes = bob && <h1>I am bob</h1>;
-
-  const isBlack = false;
+  const users = [
+    {
+      name: "pedro",
+      age: 12,
+    },
+    {
+      name: "joe",
+      age: 12,
+    },
+    {
+      name: "bob",
+      age: 23,
+    },
+  ];
 
   return (
     <div className="App">
-      {bob ? <h1>I am bob</h1> : <h1>I am not bob</h1>}
-      <h1 style={{ color: isBlack ? "black" : "red" }}>
-        {isBlack ? <h1>im black</h1> : <h1>im red</h1>}
-      </h1>
+      {users.map((user, key) => {
+        return <User name={user.name} age={user.age} />;
+      })}
     </div>
   );
 }
+
+const User = (props) => {
+  return (
+    <div>
+      {props.name} {props.age}
+    </div>
+  );
+};
 
 export default App;
