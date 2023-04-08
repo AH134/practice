@@ -1,57 +1,30 @@
-const Header = (props) => {
-  return <h1>{props.courseName.name}</h1>;
-};
-
-const Total = (props) => {
-  const partsArray = props.course.parts;
-  let total = 0;
-
-  partsArray.forEach((part) => {
-    total += part.exercises;
-  });
-
-  return <p>Number of exercises {total}</p>;
-};
-
-const Part = (props) => {
-  const partsArray = props.course.parts;
-  const parts = partsArray.map((part) => {
-    return (
-      <p>
-        {part.name} {part.exercises}
-      </p>
-    );
-  });
-
-  return <div className="parts">{parts}</div>;
-};
-
-function App() {
-  const course = {
-    name: "Half Stack application development",
-    parts: [
-      {
-        name: "Fundamentals of React",
-        exercises: 10,
-      },
-      {
-        name: "Using props to pass data",
-        exercises: 7,
-      },
-      {
-        name: "State of a component",
-        exercises: 14,
-      },
-    ],
+const Hello = ({ name, age }) => {
+  const bornYear = () => {
+    const yearNow = new Date().getFullYear();
+    return yearNow - age;
   };
 
   return (
     <div>
-      <Header courseName={course} />
-      <Part course={course} />
-      <Total course={course} />
+      <p>
+        Hello {name}, you are {age} years old
+      </p>
+      <p>So you were probably forn in {bornYear()}</p>
     </div>
   );
-}
+};
+
+const App = () => {
+  const name = "Peter";
+  const age = 10;
+
+  return (
+    <div>
+      <h1>Greetings</h1>
+      <Hello name="Maya" age={26 + 10} />
+      <Hello name={name} age={age} />
+    </div>
+  );
+};
 
 export default App;
