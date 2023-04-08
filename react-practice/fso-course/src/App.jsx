@@ -1,43 +1,46 @@
 import { useState } from "react";
 
-const History = (props) => {
-  if (props.allClicks.length === 0) {
-    return <div> the app is used by pressing the butts </div>;
-  }
-  return <div> button press history: {props.allClicks.join(" ")} </div>;
-};
-
-const Button = ({ handleClick, text }) => (
-  <button onClick={handleClick}> {text} </button>
-);
-
 const App = () => {
-  const [left, setLeft] = useState(0);
-  const [right, setRight] = useState(0);
-  const [allClicks, setAll] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [value, setValue] = useState(10);
 
-  const handleLeftClick = () => {
-    const updatedLeft = left + 1;
-    setAll(allClicks.concat("L"));
-    setLeft(updatedLeft);
-    setTotal(updatedLeft + right);
+  // function that returns a function
+  // function call return another function which executes when button is clicked
+  const hello = (who) => {
+    const handler = () => {
+      console.log("hello", who);
+    };
+    return handler;
   };
 
-  const handleRightClick = () => {
-    const updatedRight = right + 1;
-    setAll(allClicks.concat("R"));
-    setRight(updatedRight);
-    setTotal(left + updatedRight);
+  // short version
+  // const hello = (who) => () => {
+  //   console.log('hello', who)
+  // }
+
+  const setToValue = (newValue) => () => {
+    console.log("value now", newValue);
+    setValue(newValue);
+  };
+
+  // another way without returning a function
+  const setToValue2 = (newValue) => {
+    console.log("value now", newValue);
+    setValue(newValue);
   };
 
   return (
     <div>
-      {left}
-      <Button handleClick={handleLeftClick} text="left" />
-      <Button handleClick={handleRightClick} text="right" />
-      {right}
-      <History allClicks={allClicks} />
+      {value}
+      <button onClick={setToValue(1000)}>thousand</button>
+      <button onClick={setToValue(0)}>reset</button>
+      <button onClick={setToValue(value + 1)}>increment</button>
+      <button
+        onClick={() => {
+          setToValue2(value + 1);
+        }}
+      >
+        increment
+      </button>
     </div>
   );
 };
