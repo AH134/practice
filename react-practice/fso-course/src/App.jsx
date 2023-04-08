@@ -1,46 +1,82 @@
 import { useState } from "react";
 
-const App = () => {
-  const [value, setValue] = useState(10);
+const Button = ({ handleClick, text }) => {
+  return <button onClick={handleClick}>{text}</button>;
+};
 
-  // function that returns a function
-  // function call return another function which executes when button is clicked
-  const hello = (who) => {
-    const handler = () => {
-      console.log("hello", who);
-    };
-    return handler;
-  };
+const StatsLine = ({ text, value }) => {
+  return (
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
+  );
+};
 
-  // short version
-  // const hello = (who) => () => {
-  //   console.log('hello', who)
-  // }
-
-  const setToValue = (newValue) => () => {
-    console.log("value now", newValue);
-    setValue(newValue);
-  };
-
-  // another way without returning a function
-  const setToValue2 = (newValue) => {
-    console.log("value now", newValue);
-    setValue(newValue);
-  };
+const Statistics = (props) => {
+  const { good, neutral, bad, givenFeedback } = props;
+  const total = good + neutral + bad;
+  const average = good + bad / total;
+  const positive = good / bad;
 
   return (
     <div>
-      {value}
-      <button onClick={setToValue(1000)}>thousand</button>
-      <button onClick={setToValue(0)}>reset</button>
-      <button onClick={setToValue(value + 1)}>increment</button>
-      <button
-        onClick={() => {
-          setToValue2(value + 1);
+      {givenFeedback ? (
+        <table>
+          <tbody>
+            <StatsLine text="good" value={good} />
+            <StatsLine text="neutral" value={neutral} />
+            <StatsLine text="bad" value={bad} />
+            <StatsLine text="total" value={total} />
+            <StatsLine text="average" value={average} />
+            <StatsLine text="positive" value={positive} />
+          </tbody>
+        </table>
+      ) : (
+        <p>No feedback given</p>
+      )}
+    </div>
+  );
+};
+
+const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+  const [givenFeedback, setGivenFeedback] = useState(false);
+
+  return (
+    <div>
+      <h1>give feedback</h1>
+      <Button
+        handleClick={() => {
+          setGood(good + 1);
+          setGivenFeedback(true);
         }}
-      >
-        increment
-      </button>
+        text="good"
+      />
+      <Button
+        handleClick={() => {
+          setNeutral(neutral + 1);
+          setGivenFeedback(true);
+        }}
+        text="neutral"
+      />
+      <Button
+        handleClick={() => {
+          setBad(bad + 1);
+          setGivenFeedback(true);
+        }}
+        text="bad"
+      />
+
+      <h1>statistics</h1>
+      <Statistics
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        givenFeedback={givenFeedback}
+      />
     </div>
   );
 };
