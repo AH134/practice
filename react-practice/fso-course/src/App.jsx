@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import personService from "./services/persons";
 const Filter = ({ onChange }) => {
   return (
     <>
@@ -36,25 +36,33 @@ const PersonForm = (props) => {
 };
 
 const Numbers = (props) => {
-  const { isFiltered, filteredList, personList } = props;
+  const { isFiltered, filteredList, personList, handleOnDelete } = props;
   return (
-    <ol>
+    <>
       {isFiltered
         ? filteredList.map((filteredPerson) => {
             return (
-              <li key={filteredPerson.id}>
-                {filteredPerson.name} {filteredPerson.number}
-              </li>
+              <div key={filteredPerson.id}>
+                <li>
+                  {filteredPerson.name} {filteredPerson.number}
+                  <button onclick={() => handleOnDelete(filteredPerson)}>
+                    delete
+                  </button>
+                </li>
+              </div>
             );
           })
         : personList.map((person) => {
             return (
-              <li key={person.id}>
-                {person.name} {person.number}
-              </li>
+              <div key={person.id}>
+                <li>
+                  {person.name} {person.number}
+                  <button onClick={() => handleOnDelete(person)}>delete</button>
+                </li>
+              </div>
             );
           })}
-    </ol>
+    </>
   );
 };
 
@@ -65,15 +73,24 @@ const App = () => {
   const [filter, setFilter] = useState([]);
   const [filtering, setFiltering] = useState(false);
 
-  // the [] makes it so that it only runs at first render
-  useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3000/persons").then((response) => {
-      console.log("reponse fulfilled");
-      setPersons(response.data);
+  const handleOnFiltered = (e) => {
+    const filteredWord = e.target.value.toLowerCase();
+    const filteredList = persons.filter((person) => {
+      return person.name.toLowerCase().includes(filteredWord);
     });
-  }, []);
-  console.log("render", persons.length, "rendered");
+
+    setFiltering(filteredWord !== "");
+    setFilter(filteredList);
+  };
+
+  const handleOnDelete = (person) => {
+    const { name, id } = person;
+    if (confirm(`Delete ${name}?`)) {
+      personService.remove(id).then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
+  };
 
   const handleOnNameChange = (e) => {
     setNewName(e.target.value);
@@ -83,38 +100,53 @@ const App = () => {
     setNewNumber(e.target.value);
   };
 
+  // the [] makes it so that it only runs at first render
+  useEffect(() => {
+    personService
+      .getAll()
+      .then((returnedPersons) => setPersons(returnedPersons));
+  }, []);
+
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    const personExists = persons.find((person) => {
-      return person.name === newName;
-    });
+    const personExists = persons.find((person) => person.name === newName);
+
     if (newName !== "" && newNumber !== "") {
       if (personExists === undefined) {
-        const newPersonList = {
+        const newPerson = {
           name: newName,
           number: newNumber,
-          id: persons.length + 1,
         };
 
-        setPersons(persons.concat(newPersonList));
-        setNewName("");
-        setNewNumber("");
+        personService.create(newPerson).then((returnedPersons) => {
+          setPersons(persons.concat(returnedPersons));
+          setNewName("");
+          setNewNumber("");
+        });
       } else {
-        window.alert(`${newName} is already added to phonebook`);
+        // if name exists
+        const updateNumber = window.confirm(
+          `${personExists.name} is already added to phonebook, replace the old number with a new one?`
+        );
+
+        if (updateNumber) {
+          const updatedNumber = { ...personExists, number: newNumber };
+          personService
+            .update(personExists.id, updatedNumber)
+            .then((returnedPerson) => {
+              setPersons(
+                persons.map((person) =>
+                  person.name !== newName ? person : returnedPerson
+                )
+              );
+              setNewName("");
+              setNewNumber("");
+            });
+        }
       }
     } else {
       window.alert("name or number cannot be empty");
     }
-  };
-
-  const handleOnFiltered = (e) => {
-    const filteredWord = e.target.value.toLowerCase();
-    const filteredList = persons.filter((person) => {
-      return person.name.toLowerCase().includes(filteredWord);
-    });
-
-    setFiltering(filteredWord !== "");
-    setFilter(filteredList);
   };
 
   return (
@@ -136,6 +168,7 @@ const App = () => {
         isFiltered={filtering}
         filteredList={filter}
         personList={persons}
+        handleOnDelete={handleOnDelete}
       />
     </div>
   );
