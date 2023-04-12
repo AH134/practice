@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import personService from "./services/persons";
+
 const Filter = ({ onChange }) => {
   return (
     <>
@@ -66,12 +67,23 @@ const Numbers = (props) => {
   );
 };
 
+const Notification = ({ message, color }) => {
+  if (message == null) {
+    return null;
+  }
+  return <div className={color}>{message}</div>;
+};
 const App = () => {
   const [persons, setPersons] = useState([]);
+
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+
   const [filter, setFilter] = useState([]);
   const [filtering, setFiltering] = useState(false);
+
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const handleOnFiltered = (e) => {
     const filteredWord = e.target.value.toLowerCase();
@@ -86,9 +98,23 @@ const App = () => {
   const handleOnDelete = (person) => {
     const { name, id } = person;
     if (confirm(`Delete ${name}?`)) {
-      personService.remove(id).then(() => {
-        setPersons(persons.filter((person) => person.id !== id));
-      });
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+        })
+        .catch(() => {
+          setNotificationMessage(
+            `Information of ${name} has already been removed from server`
+          );
+          setSuccess(false);
+
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
+
+          setPersons(persons.filter((person) => person.id !== id));
+        });
     }
   };
 
@@ -123,6 +149,13 @@ const App = () => {
           setNewName("");
           setNewNumber("");
         });
+
+        setNotificationMessage(`Added ${newName}`);
+        setSuccess(true);
+
+        setTimeout(() => {
+          setNotificationMessage(null);
+        }, 5000);
       } else {
         // if name exists
         const updateNumber = window.confirm(
@@ -152,6 +185,11 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {success ? (
+        <Notification message={notificationMessage} color="success" />
+      ) : (
+        <Notification message={notificationMessage} color="error" />
+      )}
       <Filter onChange={handleOnFiltered} />
 
       <h2>add a new</h2>
