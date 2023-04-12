@@ -1,8 +1,8 @@
 # fso ignored files
-js-practice/
-responsive design/
-rust-practice/
-react-practice/my-app
-react-practice/tutorial
-react-practice/vite-project
+/js-practice
+/responsive design
+/rust-practice
+/react-practice/my-app
+/react-practice/tutorial
+/react-practice/vite-project
 
