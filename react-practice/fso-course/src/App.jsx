@@ -22,7 +22,8 @@ const Notification = ({ countriesLength }) => {
   );
 };
 
-const CountryList = ({ filteredCountries, toggleShow, handelOnShow }) => {
+const CountryList = (props) => {
+  const { filteredCountries, handelOnShow } = props;
   return (
     <div>
       {filteredCountries.map((country) => (
@@ -35,7 +36,8 @@ const CountryList = ({ filteredCountries, toggleShow, handelOnShow }) => {
   );
 };
 
-const CountryInformation = ({ filteredCountries }) => {
+const CountryInformation = (props) => {
+  const { filteredCountries, temp, icon, windSpeed } = props;
   const country = filteredCountries[0];
   const languages = Object.keys(country.languages);
 
@@ -58,11 +60,20 @@ const CountryInformation = ({ filteredCountries }) => {
         alt={`${country.name.common} flag`}
         width={150}
       />
+      <h1>Weather in {country.capital}</h1>
+      <p>temperature {temp} Celcius</p>
+      <img
+        src={`https://openweathermap.org/img/wn/${icon}@2x.png`}
+        alt="weather-icon"
+      />
+      <p>wind {windSpeed} m/s</p>
     </div>
   );
 };
 
-const DisplayCountry = ({ filteredCountries, handelOnShow }) => {
+const DisplayCountry = (props) => {
+  const { filteredCountries, handelOnShow, temp, icon, windSpeed } = props;
+
   if (filteredCountries.length < 10 && filteredCountries.length > 1) {
     return (
       <CountryList
@@ -71,7 +82,14 @@ const DisplayCountry = ({ filteredCountries, handelOnShow }) => {
       />
     );
   } else if (filteredCountries.length == 1) {
-    return <CountryInformation filteredCountries={filteredCountries} />;
+    return (
+      <CountryInformation
+        filteredCountries={filteredCountries}
+        temp={temp}
+        icon={icon}
+        windSpeed={windSpeed}
+      />
+    );
   }
 };
 
@@ -79,6 +97,10 @@ const App = () => {
   const [searchedCountry, setSearchedCountry] = useState("");
   const [countries, setCountries] = useState([]);
   const [filteredCountries, setFilteredCountries] = useState([]);
+
+  const [weatherTemp, setWeatherTemp] = useState(0);
+  const [weatherIcon, setWeatherIcon] = useState("");
+  const [weatherWindSpeed, setWeatherWindSpeed] = useState(0);
 
   const handleOnChange = (e) => {
     setSearchedCountry(e.target.value);
@@ -92,7 +114,7 @@ const App = () => {
 
   useEffect(() => {
     axios.get("https://restcountries.com/v3.1/all").then((res) => {
-      setCountries(countries.concat(res.data));
+      setCountries(res.data);
     });
   }, []);
 
@@ -108,12 +130,29 @@ const App = () => {
   }, [searchedCountry]);
 
   useEffect(() => {
-    axios.get(
-      `http://api.openweathermap.org/data/2.5/forecast?lat=44.34&lon=10.99&appid=${
-        import.meta.env.VITE_OPEN_WEATHER_API_KEY
-      }`
-    );
-  });
+    const countryCapital =
+      filteredCountries[0] !== undefined
+        ? filteredCountries[0].capital[0]
+        : null;
+
+    if (countryCapital !== null) {
+      axios
+        .get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${countryCapital}&units=metric&appid=${
+            import.meta.env.VITE_OPEN_WEATHER_API_KEY
+          }`
+        )
+        .then((res) => {
+          return res.data;
+        })
+        .then((weatherData) => {
+          setWeatherIcon(weatherData.weather[0].icon);
+          setWeatherTemp(weatherData.main.temp);
+          setWeatherWindSpeed(weatherData.wind.speed);
+        });
+    }
+  }, [filteredCountries.length == 1]);
+
   return (
     <div>
       <Search
@@ -127,6 +166,9 @@ const App = () => {
       <DisplayCountry
         filteredCountries={filteredCountries}
         handelOnShow={handelOnShow}
+        temp={weatherTemp}
+        icon={weatherIcon}
+        windSpeed={weatherWindSpeed}
       />
     </div>
   );
