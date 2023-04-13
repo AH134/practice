@@ -1,212 +1,132 @@
 import { useEffect, useState } from "react";
-import personService from "./services/persons";
+import axios from "axios";
 
-const Filter = ({ onChange }) => {
+const Search = ({ handleOnChange, searchedCountry }) => {
   return (
     <>
-      <span>filter shown with</span>
-      <input type="text" onChange={onChange} />
+      <span>find countries</span>
+      <input type="text" value={searchedCountry} onChange={handleOnChange} />
     </>
   );
 };
 
-const PersonForm = (props) => {
-  const {
-    newName,
-    newNumber,
-    handleOnSubmit,
-    handleOnNameChange,
-    handleOnNumberChange,
-  } = props;
-
-  return (
-    <form onSubmit={handleOnSubmit}>
-      <div>debug name: {newName}</div>
-      <div>debug name: {newNumber}</div>
-      <div>
-        name: <input value={newName} onChange={handleOnNameChange} />
-      </div>
-      <div>
-        number: <input value={newNumber} onChange={handleOnNumberChange} />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  );
-};
-
-const Numbers = (props) => {
-  const { isFiltered, filteredList, personList, handleOnDelete } = props;
-  return (
-    <>
-      {isFiltered
-        ? filteredList.map((filteredPerson) => {
-            return (
-              <div key={filteredPerson.id}>
-                <li>
-                  {filteredPerson.name} {filteredPerson.number}
-                  <button onclick={() => handleOnDelete(filteredPerson)}>
-                    delete
-                  </button>
-                </li>
-              </div>
-            );
-          })
-        : personList.map((person) => {
-            return (
-              <div key={person.id}>
-                <li>
-                  {person.name} {person.number}
-                  <button onClick={() => handleOnDelete(person)}>delete</button>
-                </li>
-              </div>
-            );
-          })}
-    </>
-  );
-};
-
-const Notification = ({ message, color }) => {
-  if (message == null) {
+const Notification = ({ countriesLength }) => {
+  if (countriesLength < 10) {
     return null;
   }
-  return <div className={color}>{message}</div>;
-};
-const App = () => {
-  const [persons, setPersons] = useState([]);
-
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
-
-  const [filter, setFilter] = useState([]);
-  const [filtering, setFiltering] = useState(false);
-
-  const [notificationMessage, setNotificationMessage] = useState(null);
-  const [success, setSuccess] = useState(false);
-
-  const handleOnFiltered = (e) => {
-    const filteredWord = e.target.value.toLowerCase();
-    const filteredList = persons.filter((person) => {
-      return person.name.toLowerCase().includes(filteredWord);
-    });
-
-    setFiltering(filteredWord !== "");
-    setFilter(filteredList);
-  };
-
-  const handleOnDelete = (person) => {
-    const { name, id } = person;
-    if (confirm(`Delete ${name}?`)) {
-      personService
-        .remove(id)
-        .then(() => {
-          setPersons(persons.filter((person) => person.id !== id));
-        })
-        .catch(() => {
-          setNotificationMessage(
-            `Information of ${name} has already been removed from server`
-          );
-          setSuccess(false);
-
-          setTimeout(() => {
-            setNotificationMessage(null);
-          }, 5000);
-
-          setPersons(persons.filter((person) => person.id !== id));
-        });
-    }
-  };
-
-  const handleOnNameChange = (e) => {
-    setNewName(e.target.value);
-  };
-
-  const handleOnNumberChange = (e) => {
-    setNewNumber(e.target.value);
-  };
-
-  // the [] makes it so that it only runs at first render
-  useEffect(() => {
-    personService
-      .getAll()
-      .then((returnedPersons) => setPersons(returnedPersons));
-  }, []);
-
-  const handleOnSubmit = (e) => {
-    e.preventDefault();
-    const personExists = persons.find((person) => person.name === newName);
-
-    if (newName !== "" && newNumber !== "") {
-      if (personExists === undefined) {
-        const newPerson = {
-          name: newName,
-          number: newNumber,
-        };
-
-        personService.create(newPerson).then((returnedPersons) => {
-          setPersons(persons.concat(returnedPersons));
-          setNewName("");
-          setNewNumber("");
-        });
-
-        setNotificationMessage(`Added ${newName}`);
-        setSuccess(true);
-
-        setTimeout(() => {
-          setNotificationMessage(null);
-        }, 5000);
-      } else {
-        // if name exists
-        const updateNumber = window.confirm(
-          `${personExists.name} is already added to phonebook, replace the old number with a new one?`
-        );
-
-        if (updateNumber) {
-          const updatedNumber = { ...personExists, number: newNumber };
-          personService
-            .update(personExists.id, updatedNumber)
-            .then((returnedPerson) => {
-              setPersons(
-                persons.map((person) =>
-                  person.name !== newName ? person : returnedPerson
-                )
-              );
-              setNewName("");
-              setNewNumber("");
-            });
-        }
-      }
-    } else {
-      window.alert("name or number cannot be empty");
-    }
-  };
 
   return (
     <div>
-      <h2>Phonebook</h2>
-      {success ? (
-        <Notification message={notificationMessage} color="success" />
-      ) : (
-        <Notification message={notificationMessage} color="error" />
-      )}
-      <Filter onChange={handleOnFiltered} />
+      <p>Too many matches, specify another filter</p>
+    </div>
+  );
+};
 
-      <h2>add a new</h2>
-      <PersonForm
-        newName={newName}
-        newNumber={newNumber}
-        handleOnSubmit={handleOnSubmit}
-        handleOnNameChange={handleOnNameChange}
-        handleOnNumberChange={handleOnNumberChange}
+const CountryList = ({ filteredCountries, toggleShow, handelOnShow }) => {
+  return (
+    <div>
+      {filteredCountries.map((country) => (
+        <div key={country.name.common}>
+          <li>{country.name.common}</li>
+          <button onClick={() => handelOnShow(country)}>show</button>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const CountryInformation = ({ filteredCountries }) => {
+  const country = filteredCountries[0];
+  const languages = Object.keys(country.languages);
+
+  return (
+    <div>
+      <h1>{country.name.common}</h1>
+      <li>capital {country.capital}</li>
+      <li>area {country.area}</li>
+
+      <p>
+        <b>Languages:</b>
+      </p>
+      <ul>
+        {languages.map((language) => (
+          <li key={language}>{country.languages[language]}</li>
+        ))}
+      </ul>
+      <img
+        src={country.flags.png}
+        alt={`${country.name.common} flag`}
+        width={150}
       />
+    </div>
+  );
+};
 
-      <h2>Numbers</h2>
-      <Numbers
-        isFiltered={filtering}
-        filteredList={filter}
-        personList={persons}
-        handleOnDelete={handleOnDelete}
+const DisplayCountry = ({ filteredCountries, handelOnShow }) => {
+  if (filteredCountries.length < 10 && filteredCountries.length > 1) {
+    return (
+      <CountryList
+        filteredCountries={filteredCountries}
+        handelOnShow={handelOnShow}
+      />
+    );
+  } else if (filteredCountries.length == 1) {
+    return <CountryInformation filteredCountries={filteredCountries} />;
+  }
+};
+
+const App = () => {
+  const [searchedCountry, setSearchedCountry] = useState("");
+  const [countries, setCountries] = useState([]);
+  const [filteredCountries, setFilteredCountries] = useState([]);
+
+  const handleOnChange = (e) => {
+    setSearchedCountry(e.target.value);
+  };
+
+  const handelOnShow = (showCountry) => {
+    setFilteredCountries(
+      filteredCountries.filter((country) => country === showCountry)
+    );
+  };
+
+  useEffect(() => {
+    axios.get("https://restcountries.com/v3.1/all").then((res) => {
+      setCountries(countries.concat(res.data));
+    });
+  }, []);
+
+  useEffect(() => {
+    setFilteredCountries(
+      searchedCountry === ""
+        ? []
+        : countries.filter((country) => {
+            const name = country.name.common;
+            return name.toLowerCase().includes(searchedCountry);
+          })
+    );
+  }, [searchedCountry]);
+
+  useEffect(() => {
+    axios.get(
+      `http://api.openweathermap.org/data/2.5/forecast?lat=44.34&lon=10.99&appid=${
+        import.meta.env.VITE_OPEN_WEATHER_API_KEY
+      }`
+    );
+  });
+  return (
+    <div>
+      <Search
+        searchedCountry={searchedCountry}
+        handleOnChange={handleOnChange}
+      />
+      {searchedCountry !== "" ? (
+        <Notification countriesLength={filteredCountries.length} />
+      ) : null}
+
+      <DisplayCountry
+        filteredCountries={filteredCountries}
+        handelOnShow={handelOnShow}
       />
     </div>
   );
