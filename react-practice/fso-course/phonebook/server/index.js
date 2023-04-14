@@ -1,7 +1,15 @@
+const morgan = require("morgan");
 const express = require("express");
 const app = express();
 
+morgan.token("data", function getData(req) {
+  return JSON.stringify(req.body);
+});
+
 app.use(express.json());
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :data")
+);
 
 let persons = [
   {
@@ -28,7 +36,6 @@ let persons = [
 
 const generateId = () => {
   const id = Math.round(Math.random() * 100000);
-  console.log(id);
   return id;
 };
 
@@ -55,7 +62,6 @@ app.post("/api/persons", (req, res) => {
   if (body.name && body.number) {
     if (!persons.find((person) => person.name.toLowerCase() === body.name)) {
       const person = createPerson(body.name, body.number);
-      console.log(person);
       persons.concat(person);
       res.json(person);
     } else {
