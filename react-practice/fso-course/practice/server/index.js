@@ -13,6 +13,7 @@ const unknownEndpoint = (req, res) => {
   res.status(404).send({ error: "unknown endpoint" });
 };
 
+app.use(express.static("dist"));
 app.use(express.json());
 app.use(cors());
 app.use(reqLogger);
