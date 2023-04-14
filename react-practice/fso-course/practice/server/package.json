@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build:ui": "rm -rf dist && cd ../client/ && npm run build && cp -r dist ../server",
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "deploy": "npm run build:ui && npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
