@@ -1,3 +1,5 @@
+require("dotenv").config();
+const Person = require("./models/person");
 const morgan = require("morgan");
 const express = require("express");
 const app = express();
@@ -12,62 +14,27 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :data")
 );
 
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
-const generateId = () => {
-  const id = Math.round(Math.random() * 100000);
-  return id;
-};
-
-const createPerson = (name, number) => {
-  const person = {
-    id: generateId(),
-    name: name,
-    number: number,
-  };
-  return person;
-};
-
 app.get("/", (req, res) => {
   res.send("<h1>Hello</h1>");
 });
 
 app.get("/api/persons", (req, res) => {
-  res.json(persons);
+  Person.find({}).then((people) => {
+    res.json(people);
+  });
 });
 
 app.post("/api/persons", (req, res) => {
   const body = req.body;
 
   if (body.name && body.number) {
-    if (!persons.find((person) => person.name.toLowerCase() === body.name)) {
-      const person = createPerson(body.name, body.number);
-      persons.concat(person);
-      res.json(person);
-    } else {
-      res.json({ error: "name must be unique" });
-    }
+    const person = new Person({
+      name: body.name,
+      number: body.number,
+    });
+    person.save().then((savedPerson) => {
+      res.json(savedPerson);
+    });
   } else {
     res.status(404).end();
   }
