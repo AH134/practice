@@ -150,14 +150,13 @@ const App = () => {
             setPersons(persons.concat(returnedPersons));
             setNewName("");
             setNewNumber("");
+            setNotificationMessage(`Added ${newName}`);
+            setSuccess(true);
           })
           .catch((err) => {
             setNotificationMessage(err.response.data.error);
             setSuccess(false);
           });
-
-        setNotificationMessage(`Added ${newName}`);
-        setSuccess(true);
 
         setTimeout(() => {
           setNotificationMessage(null);
