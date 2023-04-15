@@ -40,21 +40,39 @@ app.post("/api/persons", (req, res) => {
   }
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find((person) => person.id === id);
-
-  if (!person) {
-    return res.status(204).end();
-  }
-  res.json(person);
+app.get("/api/persons/:id", (req, res, next) => {
+  Person.findById(req.params.id)
+    .then((person) => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((err) => next(err));
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  persons = persons.filter((person) => person.id !== id);
+app.delete("/api/persons/:id", (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+    .then((result) => {
+      res.status(204).end();
+    })
+    .catch((err) => next(err));
+});
 
-  res.status(204).end();
+app.put("/api/persons/:id", (req, res, next) => {
+  const body = req.body;
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  };
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      res.json(updatedPerson);
+    })
+    .catch((err) => next(err));
 });
 
 app.get("/info", (req, res) => {
@@ -65,6 +83,18 @@ app.get("/info", (req, res) => {
     `<p>Phone book has info for ${totalInfo} people</p> <p>${date.toUTCString()}</p>`
   );
 });
+
+const errorHandler = (err, req, res, next) => {
+  console.log(err.message);
+
+  if (err.name === "CastError") {
+    return res.status(404).send({ error: "malformatted id" });
+  }
+
+  next(err);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
