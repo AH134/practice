@@ -144,11 +144,17 @@ const App = () => {
           number: newNumber,
         };
 
-        personService.create(newPerson).then((returnedPersons) => {
-          setPersons(persons.concat(returnedPersons));
-          setNewName("");
-          setNewNumber("");
-        });
+        personService
+          .create(newPerson)
+          .then((returnedPersons) => {
+            setPersons(persons.concat(returnedPersons));
+            setNewName("");
+            setNewNumber("");
+          })
+          .catch((err) => {
+            setNotificationMessage(err.response.data.error);
+            setSuccess(false);
+          });
 
         setNotificationMessage(`Added ${newName}`);
         setSuccess(true);
