@@ -67,11 +67,11 @@ const Numbers = (props) => {
   );
 };
 
-const Notification = ({ message, color }) => {
+const Notification = ({ message, success }) => {
   if (message == null) {
     return null;
   }
-  return <div className={color}>{message}</div>;
+  return <div className={success ? "success" : "error"}>{message}</div>;
 };
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -190,11 +190,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      {success ? (
-        <Notification message={notificationMessage} color="success" />
-      ) : (
-        <Notification message={notificationMessage} color="error" />
-      )}
+      <Notification message={notificationMessage} success={success} />
+
       <Filter onChange={handleOnFiltered} />
 
       <h2>add a new</h2>
