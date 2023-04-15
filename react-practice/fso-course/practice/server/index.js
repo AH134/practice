@@ -1,3 +1,5 @@
+require("dotenv").config();
+const Note = require("./models/note");
 const cors = require("cors");
 const express = require("express");
 const app = express();
@@ -38,7 +40,9 @@ app.get("/", (rea, res) => {
 });
 
 app.get("/api/notes", (req, res) => {
-  res.json(notes);
+  Note.find({}).then((notes) => {
+    res.json(notes);
+  });
 });
 
 app.post("/api/notes", (req, res) => {
@@ -50,26 +54,20 @@ app.post("/api/notes", (req, res) => {
     });
   }
 
-  const note = {
+  const note = new Note({
     content: body.content,
     important: body.important || false,
-    id: generateId(),
-  };
+  });
 
-  notes = notes.concat(note);
-
-  res.json(note);
+  note.save().then((savedNote) => {
+    res.json(savedNote);
+  });
 });
 
 app.get("/api/notes/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const note = notes.find((note) => note.id === id);
-
-  if (note) {
+  Note.findById(req.params.id).then((note) => {
     res.json(note);
-  } else {
-    res.status(404).end();
-  }
+  });
 });
 
 app.delete("/api/notes/:id", (req, res) => {
@@ -81,7 +79,7 @@ app.delete("/api/notes/:id", (req, res) => {
 
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
