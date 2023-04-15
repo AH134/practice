@@ -57,7 +57,7 @@ app.get("/api/persons/:id", (req, res, next) => {
 
 app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then((result) => {
+    .then(() => {
       res.status(204).end();
     })
     .catch((err) => next(err));
@@ -77,13 +77,16 @@ app.put("/api/persons/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/info", (req, res) => {
+app.get("/info", (req, res, next) => {
   const date = new Date();
-  const totalInfo = persons.length;
 
-  res.send(
-    `<p>Phone book has info for ${totalInfo} people</p> <p>${date.toUTCString()}</p>`
-  );
+  Person.countDocuments({})
+    .then((totalDoc) => {
+      res.send(
+        `<p>Phone book has info for ${totalDoc} people</p> <p>${date.toUTCString()}</p>`
+      );
+    })
+    .catch((err) => next(err));
 });
 
 const errorHandler = (err, req, res, next) => {
