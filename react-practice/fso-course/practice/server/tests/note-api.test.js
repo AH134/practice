@@ -5,11 +5,6 @@ const app = require("../app");
 const api = supertest(app);
 const Note = require("../models/note");
 
-const initialNotes = [
-  { content: "HTML is easy", important: false },
-  { content: "Browser can execute only JavaScript", important: true },
-];
-
 beforeEach(async () => {
   await Note.deleteMany({});
 
@@ -69,7 +64,7 @@ test("note without content is not added", async () => {
 
   const notesAtEnd = await helper.notesInDb();
 
-  expect(notesAtEnd).toHaveLength(initialNotes.length);
+  expect(notesAtEnd).toHaveLength(helper.initialNotes.length);
 });
 
 test("a specific note can be viewed", async () => {
@@ -93,7 +88,7 @@ test("a note can be delete", async () => {
 
   const notesAtEnd = await helper.notesInDb();
 
-  expect(notesAtEnd).toHaveLength(noteAtStart.length - 1);
+  expect(notesAtEnd).toHaveLength(helper.initialNotes.length - 1);
 
   const contents = notesAtEnd.map((r) => r.content);
 

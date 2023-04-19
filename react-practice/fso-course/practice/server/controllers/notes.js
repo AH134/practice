@@ -29,8 +29,8 @@ notesRouter.get("/:id", async (req, res) => {
 });
 
 notesRouter.delete("/:id", async (req, res) => {
-  await Note.findById(req.params.id);
-  res.json(204).end();
+  await Note.findByIdAndRemove(req.params.id);
+  res.status(204).end();
 });
 
 notesRouter.put("/:id", (req, res, next) => {
