@@ -99,7 +99,7 @@ describe("addition of a new note", () => {
 describe("deletion of a note", () => {
   test("succeeds with status code 204 if id is valid", async () => {
     const noteAtStart = await helper.notesInDb();
-    const noteToDelete = await noteAtStart[0];
+    const noteToDelete = noteAtStart[0];
 
     await api.delete(`/api/notes/${noteToDelete.id}`).expect(204);
 
