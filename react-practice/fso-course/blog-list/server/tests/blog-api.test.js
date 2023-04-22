@@ -19,7 +19,7 @@ test("blog unique identifiers are named id", async () => {
   blogAtStart.body.map((blog) => expect(blog.id).toBeDefined());
 });
 
-test("new blogs csan be added to the database", async () => {
+test("new blogs can be added to the database", async () => {
   const blogAtStart = await blogHelper.blogsInDb();
   const newPost = {
     title: "Type wars",
@@ -81,4 +81,36 @@ test("respond with status code 400 if url is missing", async () => {
     likes: 7,
   };
   await api.post("/api/blogs").send(newPost).expect(400);
+});
+
+describe("deletion of a blog", () => {
+  test("succeeds with a status code of 204 with valid id", async () => {
+    const blogAtStart = await blogHelper.blogsInDb();
+    const selectedBlog = blogAtStart[0];
+
+    await api.delete(`/api/blogs/${selectedBlog.id}`).expect(204);
+  });
+
+  test("fails with a status code of 204 with invalid id", async () => {
+    const invalidId = await blogHelper.invalidId();
+
+    await api.delete(`/api/blogs/${invalidId}`).expect(204);
+  });
+});
+
+describe("updating a blog", () => {
+  test("updating the likes on a post", async () => {
+    const blogAtStart = await blogHelper.blogsInDb();
+    const selectedblog = blogAtStart[0];
+    const updatedblog = { ...selectedblog, likes: selectedblog.likes + 1 };
+
+    await api.put(`/api/blogs/${selectedblog.id}`).send(updatedblog);
+
+    const blogAtEnd = await Blog.findById(selectedblog.id);
+    expect(blogAtEnd.likes).toBe(updatedblog.likes);
+  });
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });

@@ -6,4 +6,17 @@ const blogsInDb = async () => {
   return blogs.map((blog) => blog.toJSON());
 };
 
-module.exports = { blogsInDb };
+const invalidId = async () => {
+  const newBlog = new Blog({
+    title: "joe",
+    author: "jodjsa",
+    url: "dasd",
+  });
+
+  await newBlog.save();
+  await newBlog.deleteOne();
+
+  return newBlog._id.toString();
+};
+
+module.exports = { blogsInDb, invalidId };
