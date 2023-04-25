@@ -5,9 +5,10 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const config = require("./utils/config");
 const logger = require("./utils/logger");
-const { errorHandler } = require("./utils/middleware");
+const { errorHandler, tokenExtractor } = require("./utils/middleware");
 const blogRouter = require("./controllers/blogs");
 const usersRouter = require("./controllers/users");
+const loginRouter = require("./controllers/login");
 
 logger.info(`Connecting to ${config.MONGODB_URI}`);
 
@@ -16,15 +17,17 @@ mongoose
   .then(() => {
     logger.info("Connected to MongoDB");
   })
-  .catch((err) => {
+  .catch(() => {
     logger.error("Failed to connect to MongoDB");
   });
 
 app.use(cors());
 app.use(express.json());
+app.use(tokenExtractor);
 
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/login", loginRouter);
 
 app.use(errorHandler);
 

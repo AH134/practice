@@ -2,7 +2,6 @@ const app = require("../app");
 const supertest = require("supertest");
 const api = supertest(app);
 const helper = require("./test-helper");
-const User = require("../models/user");
 
 describe("When user is invalid", () => {
   test("User is not created if usename already exists with a status code 400", async () => {
