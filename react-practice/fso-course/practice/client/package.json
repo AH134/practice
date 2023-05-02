@@ -7,10 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "json-server -p3000 --watch db.json"
+    "server": "json-server -p3000 --watch db.json",
+    "eslint": "eslint ."
   },
   "dependencies": {
     "axios": "^1.3.5",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -18,6 +20,8 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
+    "eslint": "^8.39.0",
+    "eslint-plugin-jest": "^27.2.1",
     "json-server": "^0.17.3",
     "vite": "^4.2.0"
   }
