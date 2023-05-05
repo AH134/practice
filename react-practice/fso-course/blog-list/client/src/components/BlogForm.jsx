@@ -20,7 +20,7 @@ const NoteForm = ({ addBlog }) => {
   return (
     <>
       <h1>create new</h1>
-      <form onSubmitCapture={createBlog}>
+      <form onSubmit={createBlog}>
         <div>
           title:{" "}
           <input
