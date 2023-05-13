@@ -13,7 +13,6 @@ const getTokenFrom = (req) => {
 
 notesRouter.get("/", async (req, res) => {
   const notes = await Note.find({}).populate("user", { username: 1, name: 1 });
-
   res.json(notes);
 });
 
@@ -48,7 +47,16 @@ notesRouter.get("/:id", async (req, res) => {
 });
 
 notesRouter.delete("/:id", async (req, res) => {
+  const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET);
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: "token invalid" });
+  }
+  const user = await User.findById(decodedToken.id);
+  const note = await Note.findById(req.params.id);
+
   await Note.findByIdAndRemove(req.params.id);
+  user.notes = user.notes.filter((n) => n.toString() !== note._id.toString());
+  await user.save();
   res.status(204).end();
 });
 
