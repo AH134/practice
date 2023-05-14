@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notifcation";
 import LoginForm from "./components/LoginForm";
@@ -16,11 +16,14 @@ const App = () => {
   const [isSuccessful, setIsSuccessful] = useState(null);
   const [message, setMessage] = useState(null);
 
+  const blogFormRef = useRef();
+
   useEffect(() => {
     const getBlogs = async () => {
       if (user) {
         let blogs = await blogService.getAll();
-        blogs = blogs.filter((blog) => blog.user.name === user.name);
+        // display user blogs only for the same user
+        // blogs = blogs.filter((blog) => blog.user.name === user.name);
         const sortedBlogs = blogs.sort((a, b) => {
           if (a.likes > b.likes) {
             return -1;
@@ -66,6 +69,7 @@ const App = () => {
     }
   };
   const addBlog = async (newBlog) => {
+    blogFormRef.current.toggleVisibility();
     try {
       const blog = await blogService.create(newBlog);
 
@@ -156,7 +160,7 @@ const App = () => {
       )}
 
       {user && (
-        <Togglable buttonLabel="create new blog">
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
           <BlogForm
             handleOnLogout={() => localStorage.removeItem("loggedBlogListUser")}
             addBlog={addBlog}
@@ -165,15 +169,23 @@ const App = () => {
       )}
       <br />
 
-      {user &&
-        blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            updateLikes={updateLikes}
-            deleteBlog={deleteBlog}
-          />
-        ))}
+      <div id="blog-container">
+        {user &&
+          blogs.map((blog) => {
+            const isAuthor =
+              JSON.parse(localStorage.getItem("loggedBlogListUser"))
+                .username === blog.user.username;
+            return (
+              <Blog
+                isAuthor={isAuthor}
+                key={blog.id}
+                blog={blog}
+                updateLikes={updateLikes}
+                deleteBlog={deleteBlog}
+              />
+            );
+          })}
+      </div>
     </div>
   );
 };
