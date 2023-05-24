@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 function App({ store }) {
   const good = () => {
     store.dispatch({
@@ -31,4 +33,8 @@ function App({ store }) {
     </div>
   );
 }
+
+App.propTypes = {
+  store: PropTypes.object.isRequired,
+};
 export default App;
