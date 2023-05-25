@@ -11,5 +11,13 @@ module.exports = {
   plugins: ["react", "react-refresh"],
   rules: {
     "react-refresh/only-export-components": "warn",
+    "react/prop-types": "off",
+    semi: ["error", "always"],
+    eqeqeq: "error",
+    quotes: ["error", "double"],
+    "no-trailing-spaces": "error",
+    "object-curly-spacing": ["error", "always"],
+    "arrow-spacing": ["error", { before: true, after: true }],
+    "no-console": 0,
   },
 };
