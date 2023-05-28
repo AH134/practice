@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import noteService from "./services/anecdotes";
 import { useDispatch } from "react-redux";
-import { setAnecdotes } from "./reducers/anecdoteReducer";
+import { initializeAnecdotes } from "./reducers/anecdoteReducer";
 
 import AnecdoteForm from "./components/AnecdoteForm";
 import AnecdoteList from "./components/AnecdoteList";
@@ -12,9 +11,8 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    noteService.getAll().then((res) => dispatch(setAnecdotes(res)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    dispatch(initializeAnecdotes());
+  }, [dispatch]);
 
   return (
     <div>
