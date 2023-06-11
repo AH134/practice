@@ -1,13 +1,8 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useMatch,
-  useNavigate,
-} from "react-router-dom";
+import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom";
 
 import { useState } from "react";
+
+import { useField } from "../hooks";
 
 const Menu = () => {
   const padding = {
@@ -91,16 +86,16 @@ const CreateNew = (props) => {
   const { setNotification, addNew } = props;
   const navigate = useNavigate();
 
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  const [info, setInfo] = useState("");
+  const { reset: contentReset, ...content } = useField("content");
+  const { reset: authorReset, ...author } = useField("author");
+  const { reset: infoReset, ...info } = useField("info");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0,
     });
     setNotification(`a new anecdote ${content} created!`);
@@ -117,29 +112,27 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          <input {...content} />
         </div>
         <div>
           author
-          <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          />
+          <input {...info} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <button
+          type="button"
+          onClick={() => {
+            contentReset();
+            authorReset();
+            infoReset();
+          }}
+        >
+          reset
+        </button>
       </form>
     </div>
   );
