@@ -1,0 +1,23 @@
+{
+  "jobs": [
+    {
+      "title": "software engineer",
+      "company": "Open AI",
+      "image": "https://pic1.zhimg.com/v2-d2aba0f0e32c3462d74bd1c801a81e79_r.jpg?source=1940ef5c",
+      "requirements": [
+        "4 years of react experience",
+        "bachelors of computer science"
+      ]
+    },
+    {
+      "title": "Machine Learning",
+      "company": "Open AI",
+      "image": "https://wallpapercave.com/wp/wp8684986.jpg",
+      "requirements": [
+        "4 years of react experience",
+        "masters in computer science",
+        "10 years of tensorflow experience"
+      ]
+    }
+  ]
+}
