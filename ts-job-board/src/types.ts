@@ -1,4 +1,4 @@
-type Job = {
+export type Job = {
   title: string;
   company: string;
   image: string;
