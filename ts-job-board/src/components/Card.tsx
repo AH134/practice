@@ -1,4 +1,4 @@
-import { Job } from "../types";
+import { Job } from "../types/job";
 
 function Card(props: Job) {
   const { title, image, company, requirements } = props;

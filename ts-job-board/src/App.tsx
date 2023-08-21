@@ -1,6 +1,6 @@
 import Card from "./components/Card";
 import { useEffect, useState } from "react";
-import { Job, isJob } from "./types";
+import { Job, isJob } from "./types/job";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -8,8 +8,11 @@ function App() {
   const [jobFilter, setJobFilter] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
 
-  const filteredJobs = jobs.filter((job) => job.title.includes(jobFilter));
+  const filteredJobs = jobs.filter((job) =>
+    job.title.toLowerCase().includes(jobFilter.toLowerCase())
+  );
 
+  console.log(filteredJobs);
   useEffect(() => {
     const fetchJobs = async () => {
       try {
