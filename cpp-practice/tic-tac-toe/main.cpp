@@ -4,6 +4,14 @@
 
 using namespace std;
 
+void swapPlayer(char &player) {
+  if (player == 'x') {
+    player = 'o';
+  } else {
+    player = 'x';
+  }
+}
+
 int main() {
   Board newBoard;
   int turns = 1;
@@ -15,6 +23,7 @@ int main() {
   do {
     cout << "Enter row then colum (eg. 0 0, 1 3): ";
     cin >> row >> column;
+
     newBoard.setInput(player, row, column);
     newBoard.showBoard();
 
@@ -23,11 +32,7 @@ int main() {
       break;
     }
 
-    if (player == 'x') {
-      player = 'o';
-    } else {
-      player = 'x';
-    }
+    swapPlayer(player);
 
   } while (turns <= 9);
 
