@@ -1,8 +1,12 @@
+#ifndef BOOK_H
+#define BOOK_H
+
 #include <iostream>
 #include <string>
 
 class Book {
  private:
+  static int createdBooks;
   int id;
   int rating;
   std::string name;
@@ -11,8 +15,10 @@ class Book {
   }
 
  public:
-  Book(int id, int rating, std::string name);
-  int getId();
+  Book(int rating, std::string name);
   int getRating();
+  int getId();
   std::string getName();
 };
+
+#endif

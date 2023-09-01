@@ -1,7 +1,10 @@
 #include "book.h"
 
-Book::Book(int id, int rating, std::string name) {
-  this->id = id;
+int Book::createdBooks = -1;
+
+Book::Book(int rating, std::string name) {
+  createdBooks++;
+  id = createdBooks;
   this->rating = rating;
   this->name = name;
 }
