@@ -1,8 +1,6 @@
 #include <iostream>
 using namespace std;
 
-// linked list implementation after watching a video
-
 struct Node {
   int data;
   Node* next;
@@ -11,10 +9,12 @@ struct Node {
 class LinkedList {
  private:
   Node* head;
+  Node* tail;
 
  public:
   LinkedList() {
     head = NULL;
+    tail = NULL;
   }
 
   void addNode(int num) {
@@ -29,34 +29,38 @@ class LinkedList {
       while (temp->next != NULL) {
         temp = temp->next;
       }
-      //(*temp).next = newNode;
       temp->next = newNode;
+      tail = newNode;
     }
+  }
+
+  void getData() {
+    Node* temp = head;
+
+    while (temp->next != NULL) {
+      cout << temp->data << " ";
+      temp = temp->next;
+    }
+    cout << temp->data << endl;
+  }
+
+  int getTail() {
+    return tail->data;
   }
 
   int getHead() {
-    if (head != NULL) {
-      return head->data;
-    }
-    return -1;
-  }
-
-  int getNext() {
-    if (head->next != NULL) {
-      Node* next = head->next;
-      return next->data;
-    }
-    return -1;
+    return head->data;
   }
 };
 
 int main() {
   LinkedList list;
-  list.addNode(5);
-  cout
-      << list.getHead() << endl;
-  list.addNode(6);
-  cout << list.getNext() << endl;
+  list.addNode(1);
+  list.addNode(2);
+  list.addNode(3);
+  list.getData();
+  cout << list.getHead() << endl;
+  cout << list.getTail() << endl;
 
   return 0;
 }
