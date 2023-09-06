@@ -51,6 +51,18 @@ class LinkedList {
   int getHead() {
     return head->data;
   }
+
+  int getNode(int num) {
+      Node* temp = head;
+
+      while (temp->next != NULL) {
+        if (temp->data == num) {
+          return num;
+        }
+        temp = temp->next;
+      }
+      throw std::out_of_range("Not in list");
+  }
 };
 
 int main() {
@@ -59,8 +71,12 @@ int main() {
   list.addNode(2);
   list.addNode(3);
   list.getData();
-  cout << list.getHead() << endl;
-  cout << list.getTail() << endl;
 
+  try {
+    cout << list.getNode(3) << endl;
+  } catch (std::out_of_range e) {
+    cout << e.what() << endl;
+  }
+ 
   return 0;
 }
