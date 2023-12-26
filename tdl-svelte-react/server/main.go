@@ -8,9 +8,17 @@ import (
 )
 
 func main() {
-	database.CreateDb()
+	// database.CreateDb()
 	db := database.ConnectDb()
 	var query string = `
+	DROP TABLE User
+	`
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	query = `
 	CREATE TABLE User (
 		Id INTEGER PRIMARY KEY AUTOINCREMENT,
 		Name TEXT,
@@ -18,7 +26,7 @@ func main() {
 		Password TEXT
 	);
 	`
-	_, err := db.Exec(query)
+	db.Exec(query)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -6,5 +6,6 @@ import (
 )
 
 func UserSetup() {
-	http.HandleFunc("/api/register", controllers.HandleUser)
+	http.HandleFunc("/api/signup", controllers.SignUpHandler)
+	http.HandleFunc("/api/login", controllers.LoginHandler)
 }
