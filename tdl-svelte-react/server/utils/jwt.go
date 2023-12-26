@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
 type JWT struct {
@@ -13,7 +14,9 @@ type JWT struct {
 }
 
 func NewJWT() *JWT {
+	godotenv.Load()
 	token := os.Getenv("JWT_TOKEN")
+	fmt.Println(token)
 	jwt := &JWT{
 		key: []byte(token),
 	}
