@@ -16,7 +16,6 @@ type JWT struct {
 func NewJWT() *JWT {
 	godotenv.Load()
 	token := os.Getenv("JWT_TOKEN")
-	fmt.Println(token)
 	jwt := &JWT{
 		key: []byte(token),
 	}
@@ -37,18 +36,23 @@ func (j JWT) CreateToken(name string) (string, error) {
 	return tokenString, nil
 }
 
-func (j JWT) VerifyToken(tokenString string) error {
+// return name from jwt claims
+func (j JWT) VerifyToken(tokenString string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return j.key, nil
 	})
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if !token.Valid {
-		return fmt.Errorf("invalid token")
+		return "", fmt.Errorf("invalid token")
 	}
 
-	return nil
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		name := claims["name"].(string)
+		return name, nil
+	}
+	return "", nil
 }
