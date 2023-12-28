@@ -129,9 +129,9 @@ func getUserPass(data Data) (string, error) {
 
 	var query string = `
 	SELECT Password FROM User
-	WHERE Name = ? OR Email = ?;
+	WHERE Name = ?;
 	`
-	row := db.QueryRow(query, data.Name, data.Email)
+	row := db.QueryRow(query, data.Name)
 
 	var hashedPass string
 	err := row.Scan(&hashedPass)

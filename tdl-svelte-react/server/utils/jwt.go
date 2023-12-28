@@ -49,7 +49,6 @@ func (j JWT) VerifyToken(tokenString string) (string, error) {
 	if !token.Valid {
 		return "", fmt.Errorf("invalid token")
 	}
-
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		name := claims["name"].(string)
 		return name, nil

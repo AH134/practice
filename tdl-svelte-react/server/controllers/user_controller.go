@@ -40,13 +40,18 @@ func GetTodoHandler(w http.ResponseWriter, r *http.Request) {
 	name, err := jwt.VerifyToken(tokenString)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprint(w, "Invalid Token")
+		json.NewEncoder(w).Encode(Message{
+			Message: "Invalid token",
+		})
 		return
 	}
 
 	userId, err := utils.GetIdFromDb(name)
 	if err != nil {
-		log.Fatal(err)
+		json.NewEncoder(w).Encode(Message{
+			Message: "User not found",
+		})
+		return
 	}
 
 	todoList := []models.Todo{}
@@ -54,7 +59,10 @@ func GetTodoHandler(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := db.Query(`SELECT * FROM Todo WHERE UserId = ?`, userId)
 	if err != nil {
-		log.Fatal(err)
+		json.NewEncoder(w).Encode(Message{
+			Message: "TOdos not found",
+		})
+		return
 	}
 
 	for rows.Next() {
@@ -64,7 +72,6 @@ func GetTodoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	db.Close()
 
-	fmt.Println(todoList)
 	json.NewEncoder(w).Encode(todoList)
 }
 
@@ -76,7 +83,9 @@ func AddTodoHandler(w http.ResponseWriter, r *http.Request) {
 	name, err := jwt.VerifyToken(tokenString)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprint(w, "Invalid Token")
+		json.NewEncoder(w).Encode(Message{
+			Message: "Invalid token",
+		})
 		return
 	}
 
@@ -100,6 +109,35 @@ func AddTodoHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	tokenString := getToken(r)
+	todoId := r.URL.Query().Get("id")
+
+	jwt := utils.NewJWT()
+	name, err := jwt.VerifyToken(tokenString)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(Message{
+			Message: "Invalid token",
+		})
+		return
+	}
+
+	userId, err := utils.GetIdFromDb(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db := database.ConnectDb()
+	db.Exec(`DELETE FROM Todo WHERE Id = ? AND UserId = ?`, todoId, userId)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprint(w, "deleted from db")
+}
+
+func UpdateTodoHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
 	var todo models.Todo
 	json.NewDecoder(r.Body).Decode(&todo)
@@ -110,7 +148,9 @@ func DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
 	name, err := jwt.VerifyToken(tokenString)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprint(w, "Invalid Token")
+		json.NewEncoder(w).Encode(Message{
+			Message: "Invalid token",
+		})
 		return
 	}
 
@@ -120,10 +160,13 @@ func DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db := database.ConnectDb()
-	db.Exec(`DELETE FROM Todo WHERE Id = ? AND userId = ?`, todo.Id, userId)
+	db.Exec(`UPDATE Todo SET Title = ?, Description = ?, Status = ? WHERE UserId = ? AND Id = ?`, todo.Title, todo.Description, todo.Status, userId, todo.Id)
 	if err != nil {
-		log.Fatal(err)
+		json.NewEncoder(w).Encode(Message{
+			Message: "Failed to update todo item",
+		})
+		return
 	}
 
-	fmt.Fprint(w, "deleted from db")
+	json.NewEncoder(w).Encode(todo)
 }
