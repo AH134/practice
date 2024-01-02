@@ -9,6 +9,12 @@ export type TodoType = {
 export type User = {
   name: string;
   password: string;
+  loggedIn: boolean;
+};
+
+export type LoginInfo = {
+  name: string;
+  password: string;
 };
 
 export type Message = {

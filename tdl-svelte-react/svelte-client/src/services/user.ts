@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { User, Message } from "../types";
+import type { LoginInfo, Message } from "../types";
 
 export const getToken = () => {
   const token = localStorage.getItem("token");
@@ -10,7 +10,7 @@ export const getToken = () => {
   return token;
 };
 
-const login = async (userObj: User) => {
+const login = async (userObj: LoginInfo) => {
   const res = await axios.post<Message>("/api/login", userObj);
   return res.data;
 };

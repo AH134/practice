@@ -14,7 +14,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	utils.CreateDemoUser()
+	err = utils.CreateDemoUser()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = utils.CreateDemoTodos()
 	if err != nil {
 		log.Fatal(err)
 	}

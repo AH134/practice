@@ -26,10 +26,10 @@
 
 <div id="container">
   <div id="top">
-    {#if todo.completed}
-      <p><strike>Title: {todo.title} | Completed: {todo.completed}</strike></p>
+    {#if todo.status}
+      <p><strike>Title: {todo.title} | Completed: {todo.status}</strike></p>
     {:else}
-      <p>Title: {todo.title} | Completed: {todo.completed}</p>
+      <p>Title: {todo.title} | Completed: {todo.status}</p>
     {/if}
     <button on:click={handleOpen}>Open</button>
     <button on:click={handleMark}>Mark</button>

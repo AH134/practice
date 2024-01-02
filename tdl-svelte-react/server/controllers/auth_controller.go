@@ -41,7 +41,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	addToDb(data.Name, data.Email, pass)
+	err = addToDb(data.Name, data.Email, pass)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,14 +95,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	hashedPass, err := getUserPass(data)
 	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(Message{
 			Message: "wrong name/password.",
 		})
 		return
 	}
 
-	bcrypt.CompareHashAndPassword([]byte(hashedPass), []byte(data.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPass), []byte(data.Password))
 	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(Message{
 			Message: "wrong password",
 		})

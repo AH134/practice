@@ -1,8 +1,9 @@
 <script lang="ts">
   import todoServices from "./services/todo";
   import Login from "./lib/Login.svelte";
+  import Todo from "./lib/Todo.svelte";
   import type { TodoType } from "./types";
-  import { loggedIn } from "./stores";
+  import { user } from "./stores";
   import { getToken } from "./services/user";
 
   let todoList: TodoType[];
@@ -15,14 +16,13 @@
       console.log(todoList);
     } catch (e) {
       console.log("failed to get todo list");
-      loggedIn.setFalse;
     }
   };
 
-  $: $loggedIn && loadTodos();
+  $: $user.loggedIn && loadTodos();
 </script>
 
-{#if $loggedIn}
+{#if $user.loggedIn}
   <main>
     <form on:submit|preventDefault={() => {}}>
       <p class="todo-input">
@@ -36,11 +36,13 @@
       </div>
     </form>
 
-    <div>
-      <!-- {#each todoItemList as todo (todo.id)}
-      <Todo {todo} on:delete={handleDelete} on:mark={handleMark} />
-    {/each} -->
-    </div>
+    {#if todoList}
+      <div>
+        {#each todoList as todo (todo.id)}
+          <Todo {todo} on:delete={() => {}} on:mark={() => {}} />
+        {/each}
+      </div>
+    {/if}
   </main>
 {:else}
   <Login />
@@ -48,6 +50,7 @@
 
 <style>
   main {
+    overflow: auto;
     border: 2px solid rgba(146, 141, 141, 0.87);
     border-radius: 15px;
     height: 35em;

@@ -1,14 +1,26 @@
 import { writable } from "svelte/store";
+import type { User } from "./types";
 
-function createLoggedIn() {
-  const { subscribe, set, update } = writable(false);
+function createUser() {
+  const defaultUser: User = {
+    name: "demo",
+    password: "demo123",
+    loggedIn: false,
+  };
+  const { subscribe, set, update } = writable(defaultUser);
 
   return {
     subscribe,
-    setFalse: () => update((n) => (n = false)),
-    setTrue: () => update((n) => (n = true)),
-    reset: () => set(false),
+    setLoggedOut: () =>
+      update((user) => {
+        return { ...user, loggedIn: false };
+      }),
+    setLoggedIn: () =>
+      update((user) => {
+        return { ...user, loggedIn: true };
+      }),
+    reset: () => set(defaultUser),
   };
 }
 
-export const loggedIn = createLoggedIn();
+export const user = createUser();

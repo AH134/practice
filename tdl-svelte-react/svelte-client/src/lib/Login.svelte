@@ -1,13 +1,8 @@
 <script lang="ts">
-  import type { User } from "../types";
+  import type { LoginInfo } from "../types";
   import userServices from "../services/user";
-  import { loggedIn } from "../stores";
+  import { user } from "../stores";
   import { onMount } from "svelte";
-
-  const user: User = {
-    name: "demo",
-    password: "demo123",
-  };
 
   onMount(() => {
     const token = userServices.getToken();
@@ -15,16 +10,19 @@
       console.log("no token");
       return;
     }
-    loggedIn.setTrue();
+    user.setLoggedIn();
     return () => console.log("Login component destroyed");
   });
 
   const handleLogin = async () => {
     try {
-      console.log(user);
-      const res = await userServices.login(user);
+      const loginInfo: LoginInfo = {
+        name: $user.name,
+        password: $user.password,
+      };
+      const res = await userServices.login(loginInfo);
       localStorage.setItem("token", res.message);
-      loggedIn.setTrue();
+      user.setLoggedIn();
     } catch (e) {
       console.log("oops! error in login page");
     }
@@ -34,8 +32,9 @@
 <div>
   <p id="login">Login</p>
   <form on:submit|preventDefault={handleLogin}>
-    Name: <input type="text" id="name" bind:value={user.name} />
-    Password: <input type="password" id="password" bind:value={user.password} />
+    Name: <input type="text" id="name" bind:value={$user.name} />
+    Password:
+    <input type="password" id="password" bind:value={$user.password} />
     <button type="submit">Login</button>
   </form>
 </div>

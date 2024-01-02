@@ -32,6 +32,7 @@ func addTodoDb(todo models.Todo) error {
 	return nil
 }
 
+/* BORKED ADD ERR = NEXT TO FUNCTIONS*/
 func GetTodoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	tokenString := getToken(r)
