@@ -28,5 +28,5 @@ fn five() -> i32 {
 }
 
 fn plus_one(y: i32) -> i32 {
-    y + 1;
+    y + 1
 }
