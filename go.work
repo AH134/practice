@@ -1,9 +1,0 @@
-go 1.21.1
-
-use ./go-practice/tutorial/greetings
-use ./go-practice/tutorial/hello
-use ./go-practice/rps/
-use ./go-practice/rps/bot
-use ./go-practice/restAPItesting
-use ./go-practice/websocket
-use ./tdl-svelte-react/server
